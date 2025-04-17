@@ -1,29 +1,238 @@
-* {
-  margin-right: 30px;
-  margin-left: 30px;
-  padding-top: 0px;
-}
-
-#navbar {
-  background-color: rgb(18, 18, 18);
+.navbar-top {
+  background-color: #000000;
   height: 50px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  margin-top: 0px;
-}
-#nav-left {
-  display: flex;
-  justify-content: flex-end;
-}
-#nav-right {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  padding: 0 250px;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
-#dropdown {
-  background-color: blue;
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
-#mal {
+.navbar-bottom {
+  padding: 0 250px;
+  background-color: #2e51a2;
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+}
+.logo {
+  font-size: 27px;
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+.nav-links {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+.nav-link {
+  color: white;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: #394e7e;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.search-input {
+  padding: 8px 35px 8px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 300px;
+  background-color: rgb(0, 0, 0);
+  color: white;
+  font-family: monospace;
+}
+
+.search-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+  animation: blink 1.6s step-end infinite;
+}
+
+@keyframes blink {
+  from,
+  to {
+    caret-color: transparent;
+  }
+  50% {
+    caret-color: rgb(255, 255, 255);
+  }
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  color: #666;
+  cursor: pointer;
+}
+
+.nav-icons {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.nav-icon: hover {
+  color: #ddd;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+.dropdown-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+  border-radius: 4px;
+}
+
+.dropdown-btn:hover {
+  background-color: #394e7e;
+}
+.dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  z-index: 1000;
+  margin-top: 5px;
+}
+.dropdown-content a {
+  color: #2e51a2;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+.search-input:focus {
+  outline: none;
+
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.search-results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-result-item:hover {
+  background-color: #f3f4f6;
+}
+
+.result-image {
+  width: 40px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.result-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.result-title {
+  color: #1f2937;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.result-details {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.no-results {
+  padding: 1rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
 }
