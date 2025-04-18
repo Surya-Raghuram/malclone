@@ -1,17 +1,34 @@
-import  {useState} from 'react';
+import  {useState, useRef} from 'react';
 import {  Bell, MessageSquare, User } from 'lucide-react';
 import '../styles/Navbar.css'
 import AnimeSearchButton from './AnimeSearch';
+import { Link } from 'react-router-dom';
+
 
 const Navbar = () =>{
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+                            //Number returned by browser when using setTimeout/ setIntervel. 
+  const handleMouseEnter = () => {
+    // Clear any existing timeout to prevent accidental closure
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsDropDownOpen(true);
+  };
 
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsDropDownOpen(false);
+    }, 2000); // 3 seconds
+  };
   return(
     <>
     <nav className="navbar-top">
       <div className="navbar-left">
-        <div className='logo'>MyAnimeList </div>  
-        </div>  
+        <Link className='logo' to="/">MyAnimeList </Link>  
+      </div>  
       <div className="navbar-right">
         
         <div className="nav-icons">
@@ -23,12 +40,12 @@ const Navbar = () =>{
     </nav>
     <nav className="navbar-bottom">
       <div className="nav-links">
-          <div className="dropdown" onMouseEnter={()=> setIsDropDownOpen(true)}
-          onMouseLeave={()=>setIsDropDownOpen(false)}>
+          <div className="dropdown" onMouseEnter={handleMouseEnter}
+          onMouseLeave= {handleMouseLeave}>
             <button className="dropdown-btn">Anime</button>
             {isDropDownOpen && (
               <div className="dropdown-content">
-                <a href="#" >Top Anime</a>
+                <Link to="/top/anime">Top Anime</Link>
                 <a href="#">Seasonal</a>
                 <a href="#">Movies</a>
               </div>
@@ -45,8 +62,6 @@ const Navbar = () =>{
       </nav>
     </>
   );
-
-
 };
 
 export default Navbar;

@@ -30,9 +30,7 @@ body {
   font-family: Verdana, Arial;
   font-size: 1rem;
 }
-.top-anime-types {
-  border-bottom: 2px solid white;
-}
+
 .anime-row {
   display: grid;
   grid-template-columns: 40px 1fr 100px 100px 120px;
@@ -63,8 +61,8 @@ body {
 }
 
 .anime-thumb {
-  width: 60px;
-  height: 80px;
+  width: 80px;
+  height: 110px;
   object-fit: cover;
   border-radius: 4px;
 }
@@ -129,6 +127,17 @@ body {
   background-color: #666;
 }
 
+.top-anime-type {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0px;
+  border-bottom: 2px solid white;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 .top-anime-types {
   display: flex;
   gap: 3px;
@@ -153,4 +162,15 @@ body {
   background-color: rgb(224, 224, 224);
   color: #1a1a1a;
   font-weight: bold;
+}
+.next-btn {
+  background-color: rgb(51, 126, 193);
+  padding: 6px 13px;
+  color: white;
+  font-weight: semi-bold;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 8px;
 }

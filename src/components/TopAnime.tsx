@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import '../styles/TopAnime.css'
 import Navbar from './Navbar';
 
@@ -17,38 +18,35 @@ interface AnimeCard {
   members: string;
   aired: string;
 }
-
 function TopAnime() {
   const [animeList, setAnimeList] = useState<AnimeCard[]>([]);
-  const [activeType, setActiveType] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeType = searchParams.get("type") || "all"; 
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      
-      let url = "https://api.jikan.moe/v4/top/anime?limit=25";
+    const fetchData = async () => {
+      try {
+        let url = "https://api.jikan.moe/v4/top/anime?limit=25";
 
-      if (activeType === "airing") {
-          url = "https://api.jikan.moe/v4/top/anime?filter=airing&limit=25";
-        } else if (activeType === "tv") {
-          url = "https://api.jikan.moe/v4/top/anime?type=tv&limit=25";
-        } else if (activeType === "movie") {
-          url = "https://api.jikan.moe/v4/top/anime?type=movie&limit=25";
-        } else if (activeType === "ova") {
-          url = "https://api.jikan.moe/v4/top/anime?type=ova&limit=25";
+        if (activeType === "airing") {
+          url += "&filter=airing";
+        } else if (["tv", "movie", "ova"].includes(activeType)) {
+          url += `&type=${activeType}`;
         }
-      const response = await fetch(url);
-      const data = await response.json();
-      setAnimeList(data.data);
-    } catch (error) {
-      console.error('Fetch failed:', error);
-    } 
-  };
 
-  fetchData();
-}, [activeType]);
- const handleTypeChange = (type: string) => {
-    setActiveType(type);
+        const response = await fetch(url);
+        const data = await response.json();
+        setAnimeList(data.data);
+      } catch (error) {
+        console.error("Fetch failed:", error);
+      }
+    };
+
+    fetchData();
+  }, [activeType]);
+
+  const handleTypeChange = (type: string) => {
+    setSearchParams(type === "all" ? {} : { type }); // updates URL
   };
 
 
@@ -60,15 +58,15 @@ function TopAnime() {
           <div className="top-anime"><h2>Top Anime</h2></div>
         <nav className="top-anime-type">
           <div className="top-anime-types">
-            <button className={`type ${activeType === "all" ? "active" : ""}`} onClick={()=>handleTypeChange("all")}>All Anime</button>
-            <button className={`type ${activeType === "airing" ? "active" : ""}`} onClick={()=>handleTypeChange("airing")}>Top Airing</button>
-            <button className={`type ${activeType === "tv" ? "active" : ""}`} onClick={()=>handleTypeChange("tv")}>Top TV series</button>
-            <button className={`type ${activeType === "movie" ? "active" : ""}`} onClick={()=>handleTypeChange("movie")}>Top Movies</button>
-            <button className={`type ${activeType === "ova" ? "active" : ""}`} onClick={()=>handleTypeChange("ova")}>Top Ova</button>
+            <button className={`type ${activeType === "all" ? "active" : ""}`} onClick={() => handleTypeChange("all")}>All Anime</button>
+            <button className={`type ${activeType === "airing" ? "active" : ""}`} onClick={() => handleTypeChange("airing")}>Top Airing</button>
+            <button className={`type ${activeType === "tv" ? "active" : ""}`} onClick={() => handleTypeChange("tv")}>Top TV series</button>
+            <button className={`type ${activeType === "movie" ? "active" : ""}`} onClick={() => handleTypeChange("movie")}>Top Movies</button>
+            <button className={`type ${activeType === "ova" ? "active" : ""}`} onClick={() => handleTypeChange("ova")}>Top Ova</button>
           </div>
           <div className="next">
-    <button>next</button>
-  </div>
+            <button className="next-btn">Next</button>
+          </div>
         </nav>
     {animeList.map((anime, index) => (
     <div key={anime.mal_id} className="anime-row">
@@ -101,13 +99,9 @@ function TopAnime() {
     </div>
   ))}
   
-</div>
-
-  
+</div>  
     </>
-    
-
-    
+ 
   );
 }
 
