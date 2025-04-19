@@ -3,6 +3,7 @@ import {  Bell, MessageSquare, User } from 'lucide-react';
 import '../styles/Navbar.css'
 import AnimeSearchButton from './AnimeSearch';
 import { Link } from 'react-router-dom';
+import Modal from './Modal';
 
 
 const Navbar = () =>{
@@ -23,6 +24,12 @@ const Navbar = () =>{
       setIsDropDownOpen(false);
     }, 2000); // 3 seconds
   };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => {setIsModalOpen(true)};
+  const closeModal = () => {setIsModalOpen(false)};
+
+
   return(
     <>
     <nav className="navbar-top">
@@ -35,6 +42,15 @@ const Navbar = () =>{
           <Bell size={25} className="nav-icon"/>
           <MessageSquare size={25} className="nav-icon"/>
           <User size={25} className="nav-icon"/>
+        </div>
+        <div className="sign-in" >
+           <button className="login-btn">Login</button>
+          <button className="sign-in-btn" onClick={openModal}>Sign Up</button>
+         
+        <Modal isOpen={isModalOpen} onClose={closeModal}>
+          <h2>Sign In</h2>
+        </Modal>
+
         </div>
       </div>
     </nav>
