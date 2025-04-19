@@ -237,3 +237,25 @@
   color: #6b7280;
   font-size: 0.875rem;
 }
+.sign-in {
+  display: flex;
+  gap: 7px;
+}
+
+.login-btn {
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  background-color: rgb(83, 84, 86);
+  border: none;
+  color: rgb(255, 255, 255);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+.sign-in-btn {
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+  background-color: rgb(73, 138, 241);
+  border: none;
+  color: rgb(255, 255, 255);
+  border-radius: 4px;
+}
