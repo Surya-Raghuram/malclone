@@ -3,15 +3,16 @@ import {  Bell, MessageSquare, User } from 'lucide-react';
 import '../styles/Navbar.css'
 import AnimeSearchButton from './AnimeSearch';
 import { Link } from 'react-router-dom';
-import Modal from './Modal';
+import LoginModal from './LoginModal';
+import axios from 'axios';
+
 
 
 const Navbar = () =>{
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-                            //Number returned by browser when using setTimeout/ setIntervel. 
+// <NodeJS.Timeout> is Number returned by browser when using setTimeout/ setIntervel. 
   const handleMouseEnter = () => {
-    // Clear any existing timeout to prevent accidental closure
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
@@ -22,12 +23,60 @@ const Navbar = () =>{
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsDropDownOpen(false);
-    }, 2000); // 3 seconds
+    }, 2000);
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const openModal = () => {setIsModalOpen(true)};
-  const closeModal = () => {setIsModalOpen(false)};
+// dude fml
+const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  
+  async function handleLogin (email: string, password: string)  {
+    console.log('Login attempt:', email, password);
+    try{
+      await axios.post("http://localhost:8080/", {
+        email, password
+      }).then(res => {
+        if(res.data == "exist"){
+          alert("Login Successful!");
+        }
+        else if(res.data == "not_exist"){
+          alert("User doesnot exist!")}
+          
+      }).catch(e =>{
+        alert("Wrong details");
+        console.log(e);
+      })
+    }
+    catch(e) {
+      console.log(e);
+    }
+    setIsLoginModalOpen(false);
+  };
+
+  async function handleSignUp (email: string, password: string){
+    console.log('Sign up attempt:', email, password);
+    try{
+      await axios.post("http://localhost:8080/signup", {
+        email, password
+      }).then(
+        (res) => {
+          if(res.data == "exist"){
+            alert("User already exist");
+          }
+          else if(res.data == "not_exist"){
+          alert("Signed you up");
+          console.log(`New nigga in the chat! ${email} ${password}`);
+        }
+      }
+    );
+  }  catch(e){
+    console.log(e);
+  }
+    
+    
+  }
+
+
 
 
   return(
@@ -44,12 +93,20 @@ const Navbar = () =>{
           <User size={25} className="nav-icon"/>
         </div>
         <div className="sign-in" >
-           <button className="login-btn">Login</button>
-          <button className="sign-in-btn" onClick={openModal}>Sign Up</button>
+           <button className="login-btn" onClick={()=> setIsLoginModalOpen(true)}>Login</button>
+          <button className="sign-in-btn" onClick={()=> setIsSignUpModalOpen(true)} >Sign Up</button>
          
-        <Modal isOpen={isModalOpen} onClose={closeModal}>
-          <h2>Sign In</h2>
-        </Modal>
+        <LoginModal 
+          isOpen = {isLoginModalOpen}
+          onClose={()=> setIsLoginModalOpen(false)}
+          onLogin={handleLogin} 
+        />
+        <LoginModal 
+          isOpen = {isSignUpModalOpen}
+          onClose = {()=> setIsSignUpModalOpen(false)}
+          onLogin={handleSignUp}
+
+        />
 
         </div>
       </div>
