@@ -15,7 +15,12 @@ const newSchema = new mongoose.Schema({
     password:{
         type:String,
         required:true
-    }
+    },
+    animeList: [{
+        mal_id: Number,
+        title: String,
+        status: String
+    }]
 })
 
 const collection = mongoose.model("collection", newSchema);

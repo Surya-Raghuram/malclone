@@ -6,9 +6,11 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLogin: (email: string, password: string) => void;
+  title: string;
+  
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => {
+const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, title }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -21,7 +23,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="login-modal">
-        <h2>Log In</h2>
+        <h2>{title}</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -48,14 +50,20 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin }) => 
               Cancel
             </button>
             <button type="submit" className="login-btn">
-              Log In
+              {title}
             </button>
           </div>
         </form>
+        {title=="login"? 
         <div className="login-footer">
           <p>Don't have an account? <a href="#">Sign up</a></p>
           <p><a href="#">Forgot password?</a></p>
-        </div>
+        </div> :
+        <div className="login-footer">
+          <p>Already have an account? <a href="/login">Login</a></p>
+          <p><a href="#">Forgot password?</a></p>
+        </div>}
+        
       </div>
     </Modal>
   );
