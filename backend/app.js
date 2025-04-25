@@ -7,19 +7,17 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 
 const JWT_SECRET = 'dinu';
-
-
-
-app.use(express.json()); app.use(cookieParser());app.use(express.urlencoded({extended: true}));
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: 'http://localhost:5173', // your frontend URL
-  credentials: true // 👈 allow cookies (important for JWT in cookies)
+  origin: 'http://localhost:5173',
+  credentials: true
 }));
 
 // Login and now send a jwt token :
 app.post("/", async(req,res) => {
     const{email,password} = req.body;
-
     try{
         const check = await collection.findOne({email:email});
         
@@ -31,10 +29,11 @@ app.post("/", async(req,res) => {
         const token = jwt.sign({email: check.email}, JWT_SECRET, {expiresIn: '1h'});
         console.log(token);
         res.cookie('token', token, {
-            httpOnly: true,
-            secure: true,
-            maxAge: 36000000
-        })
+            httpOnly: true, // Cookie is inaccessible to JavaScript (for security)
+            secure: false,  // Use `true` in production with HTTPS
+            sameSite: 'Lax', // Prevent cross-site request forgery
+            maxAge: 3600000  // Expiry time in milliseconds (1 hour)
+        });
         res.json("exist");
     }   
     catch(e){
@@ -52,7 +51,6 @@ app.post("/signup", async(req,res) => {
             res.json("exist");
         }
         else{
-            res.json("not_exist");
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
             const data = {
@@ -60,6 +58,7 @@ app.post("/signup", async(req,res) => {
                 password : hashedPassword
             }
             await collection.insertMany([data]);
+            res.json("not_exist");
         }
     }   
     catch(e){
@@ -67,41 +66,22 @@ app.post("/signup", async(req,res) => {
     }
 })
 
-
 function authMiddleware(req, res, next){
     const token = req.cookies.token;
-    if(!token) return res.status(401).json({message: "Unauthorized"});
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
 
-
-    try{
+    try {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
-        next;
-    }
-    catch(err){
-        return res.status(401).json({message: `Invalid token`});
+        next();
+    } catch(err) {
+        return res.status(401).json({ message: "Invalid token" });
     }
 }
-// A simple middleware to check if a user is authenticated via sessions
-const isAuthenticated = (req, res, next) => {
-  if (req.session && req.session.userId) {
-    return next();
-  }
-  return res.status(401).json({ message: "Unauthorized" });
-};
 
-// API endpoint for retrieving session data
-app.get("/api/profile", isAuthenticated, (req, res) => {
-  // Assuming you've saved the user's name (or other details) during login
-  const { userId, name } = req.session;
-  res.json({ userId, name });
+app.get('/profile', authMiddleware, (req, res) => {
+    res.json({ message: `Welcome ${req.user.email}` });
 });
-
-app.get('/profile', authMiddleware, (req, res)=> {
-    res.json({message : `Welcome ${req.user.email}`});
-    console.log(`Welcome ${req.user.email}`);
-});
-
 
 app.post('/logout', (req,res)=>{
     res.clearCookie('token');

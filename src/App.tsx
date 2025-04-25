@@ -2,7 +2,7 @@ import Navbar from './components/Navbar';
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TopAnime from './components/TopAnime';
-import Profile  from './components/Profile';
+import Dashboard  from './components/Profile';
 
 export default function App(){
   return(
@@ -10,7 +10,7 @@ export default function App(){
       <Routes>
         <Route path="/" element={<Navbar />} />
         <Route path="/top/anime" element={<TopAnime />}/>
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   )

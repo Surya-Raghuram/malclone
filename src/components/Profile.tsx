@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type UserResponse = {
   message: string;
@@ -6,26 +7,25 @@ type UserResponse = {
 
 const Dashboard = () => {
   const [user, setUser] = useState<UserResponse | null>(null);
+  const navigate = useNavigate(); // placed inside the component
 
   useEffect(() => {
-   fetch('/api/profile', {
-        method: 'GET',
-        credentials: 'include' // ensures cookies are sent with the request
-        })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error("Failed to fetch session data");
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log("User's session data:", data);
-    // Use data.name, data.userId, etc. to update your UI dynamically
-  })
-  .catch(error => {
-    console.error("Error fetching session data:", error);
-  });
-
+    fetch('http://localhost:8080/profile', {
+      method: 'GET',
+      credentials: 'include', //  send cookies
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`Failed: ${res.status} ${text}`);
+        }
+        return res.json();
+      })
+      .then((data) => setUser(data))
+      .catch((err) => {
+        console.error("Session error:", err.message);
+         navigate('/'); //  redirect to login if not authenticated
+      });
   }, []);
 
   return (
