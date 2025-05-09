@@ -1,10 +1,12 @@
 import Navbar from './components/Navbar';
+
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TopAnime from './components/TopAnime';
 import Dashboard  from './components/Profile';
 
 export default function App(){
+  
   return(
      <BrowserRouter>
       <Routes>

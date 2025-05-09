@@ -5,8 +5,9 @@ const bcrypt = require('bcrypt');
 const cors = require("cors");
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+require('dotenv').config();
 
-const JWT_SECRET = 'dinu';
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -15,31 +16,56 @@ app.use(cors({
   credentials: true
 }));
 
+
+//This should be the data to be rendered on the profile page> 
+app.get('/post', authenticateToken, async (req, res) => {
+  try {
+    const posts = await collection.find({ username: req.user.email }).toArray();
+    res.json(posts);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // Login and now send a jwt token :
-app.post("/", async(req,res) => {
-    const{email,password} = req.body;
-    try{
-        const check = await collection.findOne({email:email});
-        
-        if (!check) {
-            return res.status(404).send("User not found");
-        }
-        const doubleCheck = await bcrypt.compare(password, check.password); 
-        if(!doubleCheck) return res.status(401).json({message: 'Invalid email or password'});
-        const token = jwt.sign({email: check.email}, JWT_SECRET, {expiresIn: '1h'});
-        console.log(token);
-        res.cookie('token', token, {
-            httpOnly: true, // Cookie is inaccessible to JavaScript (for security)
-            secure: false,  // Use `true` in production with HTTPS
-            sameSite: 'Lax', // Prevent cross-site request forgery
-            maxAge: 3600000  // Expiry time in milliseconds (1 hour)
-        });
-        res.json("exist");
-    }   
-    catch(e){
-        console.log(e);
+app.post("/api/authenticate", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await collection.findOne({ email }).lean();
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-})
+
+    const passwordValid = await bcrypt.compare(password, user.password);
+    if (!passwordValid) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const accessToken = jwt.sign({ email: user.email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+    console.log(accessToken);
+    res.json({ accessToken });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
+// Middleware to authenticate the token>> 
+function authenticateToken(req, res, next){
+    const authHeader = req.header['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET,(err, user)=>{
+        if(err) return res.sendStatus(401);
+        req.user = user;
+        next()
+    })
+}
+
 
 app.post("/signup", async(req,res) => {
     const{email,password} = req.body;
@@ -66,25 +92,11 @@ app.post("/signup", async(req,res) => {
     }
 })
 
-function authMiddleware(req, res, next){
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ message: "Unauthorized" });
 
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch(err) {
-        return res.status(401).json({ message: "Invalid token" });
-    }
-}
 
-app.get('/profile', authMiddleware, (req, res) => {
-    res.json({ message: `Welcome ${req.user.email}` });
-});
+
 
 app.post('/logout', (req,res)=>{
-    res.clearCookie('token');
     res.json({message: `Logged out niggaChan`});
     console.log(res);
 })

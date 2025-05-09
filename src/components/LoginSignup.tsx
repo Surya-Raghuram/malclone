@@ -1,41 +1,38 @@
-import  {useState} from 'react';
+
 import '../styles/Navbar.css'
 import LoginModal from './LoginModal';
 import axios from 'axios';
-
+import {useState, useEffect} from 'react';
 
 const LoginSignUp = () =>{
-    
-const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+    const [user, setUser] = useState<string | null>(null);
+
   
-  async function handleLogin (email: string, password: string)  {
-    console.log('Login attempt:', email, password);
-    try{
-      await axios.post("http://localhost:8080/", { //Ee local host lo backend run avthundi 
-        email, password
-      }).then(res => {
-        if(res.data == "exist"){
-          alert("Login Successful!");
-        }
-        else if(res.data == "not_exist"){
-          alert("User doesnot exist!")}  
-        
-        else if(res.data == "wrong_password"){
-          alert("wrong password, diddy coming to your place tonight!");
-        }
-      
-      }
-      ).catch(e =>{
-        alert("Wrong details");
-        console.log(e);
-      })
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
+  
+
+
+  async function handleLogin(email: string, password: string) {
+  try {
+    const res = await axios.post("http://localhost:8080/api/authenticate", {
+      email,
+      password,
+    });
+
+    if (res.data.accessToken) {
+      localStorage.setItem("token", res.data.accessToken);  // Save token
+      localStorage.setItem("user", email);  // Save user email
+      alert("Login Successful!");
+      window.location.reload(); // Refresh UI
     }
-    catch(e) {
-      console.log(e);
-    }
-    setIsLoginModalOpen(false);
-  };
+  } catch (e) {
+    console.error(e);
+    alert("Internal Server Error, try again later!");
+  }
+
+  setIsLoginModalOpen(false);
+}
 
   async function handleSignUp (email: string, password: string){
     console.log('Sign up attempt:', email, password);
@@ -57,29 +54,42 @@ const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
     console.log(e);
   }
     
-    
+  useEffect(()=>{
+    const token = localStorage.getItem('token');
+    const email = localStorage.getItem('user');
+    if(user && token){
+      setUser(email);
+    }
+  },[]);
 }
     return (
-        <div className="sign-in" >
-           <button className="login-btn" onClick={()=> setIsLoginModalOpen(true)}>Login</button>
-          <button className="sign-in-btn" onClick={()=> setIsSignUpModalOpen(true)} >Sign Up</button>
-         
-        <LoginModal 
-          isOpen = {isLoginModalOpen}
-          onClose={()=> setIsLoginModalOpen(false)}
-          onLogin={handleLogin} 
-          title = "Login"
-        />
-        <LoginModal 
-          isOpen = {isSignUpModalOpen}
-          onClose = {()=> setIsSignUpModalOpen(false)}
-          onLogin={handleSignUp}
-          title ="SignUp"
+  <div className="sign-in">
+    {user ? (
+      <div className="profile-icon"><p>Hi</p></div>
+    ) : (
+      <>
+        <button className="login-btn" onClick={() => setIsLoginModalOpen(true)}>Login</button>
+        <button className="sign-in-btn" onClick={() => setIsSignUpModalOpen(true)}>Sign Up</button>
+      </>
+    )}
 
-        />
+    <LoginModal
+      isOpen={isLoginModalOpen}
+      onClose={() => setIsLoginModalOpen(false)}
+      onLogin={handleLogin}
+      title="Login"
+    />
+    <LoginModal
+      isOpen={isSignUpModalOpen}
+      onClose={() => setIsSignUpModalOpen(false)}
+      onLogin={handleSignUp}
+      title="SignUp"
+    />
+  </div>
+);
 
-        </div>
-    );
 }
 
 export default LoginSignUp;
+
+
