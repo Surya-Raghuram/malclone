@@ -52,7 +52,6 @@ function TopAnime() {
 
   return (
     <>
-        <Navbar />
         
         <div className="top-anime-list">
           <div className="top-anime"><h2>Top Anime</h2></div>

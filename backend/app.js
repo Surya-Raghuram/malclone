@@ -68,7 +68,7 @@ function authenticateToken(req, res, next){
 
 
 app.post("/signup", async(req,res) => {
-    const{email,password} = req.body;
+    const{email,password,username} = req.body;
 
     try{
         const check = await collection.findOne({email:email});

@@ -4,11 +4,16 @@ import '../styles/Navbar.css'
 import AnimeSearchButton from './AnimeSearch';
 import { Link } from 'react-router-dom';
 import LoginSignUp from './LoginSignup';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
 
 const Navbar = () =>{
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [profileDropdown, setIsProfileDropdown] = useState(false);
+
+   const { user } = useContext(AuthContext);
 // <NodeJS.Timeout> is Number returned by browser when using setTimeout/ setIntervel. 
   const handleMouseEnter = () => {
     if (timeoutRef.current) {
@@ -17,7 +22,18 @@ const Navbar = () =>{
     }
     setIsDropDownOpen(true);
   };
-
+  const ProfilehandleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsProfileDropdown(true);
+  };
+  const ProfilehandleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsProfileDropdown(false);
+    }, 2000);
+  };
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsDropDownOpen(false);
@@ -31,13 +47,28 @@ const Navbar = () =>{
         <Link className='logo' to="/">MyAnimeList </Link>  
       </div>  
       <div className="navbar-right">
-        
-        <div className="nav-icons">
-          <Bell size={25} className="nav-icon"/>
-          <MessageSquare size={25} className="nav-icon"/>
-          <User size={25} className="nav-icon"/>
-        </div>
-        <LoginSignUp />
+      <div className="nav-icons">
+        <Bell size={25} className="nav-icon" />
+        <MessageSquare size={25} className="nav-icon" />
+          {user ? (
+              <div className="dropdown" >
+                  <button className="dropdown-btn" onClick={() => setIsProfileDropdown(!profileDropdown)} onMouseLeave={ProfilehandleMouseLeave}>{user}</button>
+                  {profileDropdown && (
+                    <div className="dropdown-content">
+                      <a id="profile-dropdown-content">
+                        <button id="logout-btn">Logout</button>
+                      </a>
+                    </div>
+                  )}
+              </div>
+              
+
+            
+              ) : (
+            <User size={25} className="nav-icon" />
+            )}
+      </div>
+        {!user && <LoginSignUp />}
       </div>
     </nav>
     <nav className="navbar-bottom">
@@ -54,11 +85,11 @@ const Navbar = () =>{
             )}
             </div>
               <a href="#" className="nav-link">Manga</a>
-          <a href="#" className="nav-link">Community</a>
-          <a href="#" className="nav-link">Industry</a>
-          <a href="#" className="nav-link">Watch</a>
-          <a href="#" className="nav-link">Read</a>
-          <a href="#" className="nav-link">Help</a>
+              <a href="#" className="nav-link">Community</a>
+              <a href="#" className="nav-link">Industry</a>
+              <a href="#" className="nav-link">Watch</a>
+              <a href="#" className="nav-link">Read</a>
+              <a href="#" className="nav-link">Help</a>
         </div>
         <AnimeSearchButton />
       </nav>

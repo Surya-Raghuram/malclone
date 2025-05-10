@@ -8,6 +8,11 @@ mongoose.connect("mongodb://localhost:27017/database").then(() =>{
 
 
 const newSchema = new mongoose.Schema({
+    username:{
+        type: String,
+        required: true,
+        unique: true,
+    },
     email:{
         type:String,
         required:true
