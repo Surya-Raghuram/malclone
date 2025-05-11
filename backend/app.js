@@ -31,12 +31,11 @@ app.get('/post', authenticateToken, async (req, res) => {
 // Login and now send a jwt token :
 app.post("/api/authenticate", async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await collection.findOne({ email }).lean();
+    const { username, email, password } = req.body;
+    const user = await collection.findOne({ username }).lean();
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
       return res.status(401).json({ message: "Invalid email or password" });
@@ -67,33 +66,30 @@ function authenticateToken(req, res, next){
 }
 
 
-app.post("/signup", async(req,res) => {
-    const{email,password,username} = req.body;
+app.post("/signup", async(req, res) => {
+  const { email, password, username } = req.body;
 
-    try{
-        const check = await collection.findOne({email:email});
+  try {
+    const check = await collection.findOne({ email: email });
 
-        if(check){
-            res.json("exist");
-        }
-        else{
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-            const data = {
-                email: email,
-                password : hashedPassword
-            }
-            await collection.insertMany([data]);
-            res.json("not_exist");
-        }
-    }   
-    catch(e){
-        console.log(e);
+    if (check) {
+      res.json("exist");
+    } else {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const data = {
+        email: email,
+        username: username, // ✅ Include this
+        password: hashedPassword
+      };
+      await collection.insertOne(data); // insertOne is clearer for single doc
+      res.json("not_exist");
     }
-})
-
-
-
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: "Signup failed" });
+  }
+});
 
 
 app.post('/logout', (req,res)=>{

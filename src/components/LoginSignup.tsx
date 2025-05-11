@@ -1,8 +1,10 @@
 import '../styles/Navbar.css';
-import LoginModal from './LoginModal';
 import axios from 'axios';
 import { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext'; // 👈 import context
+import SignupModal from './SingupModal';
+import SignUpModal from './SingupModal';
+
 
 const LoginSignUp = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -10,17 +12,19 @@ const LoginSignUp = () => {
 
   const { user, setUser } = useContext(AuthContext); // 👈 use context
 
-  async function handleLogin(email: string, password: string) {
+  async function handleLogin(email: string, password: string,username: string) {
     try {
       const res = await axios.post('http://localhost:8080/api/authenticate', {
         email,
         password,
+        username
       });
 
       if (res.data.accessToken) {
         localStorage.setItem('token', res.data.accessToken);
         localStorage.setItem('user', email);
-        setUser(email); // 👈 update context
+        localStorage.setItem('Username', username);
+        setUser(username); // 👈 update context
         alert('Login Successful!');
       }
     } catch (e) {
@@ -69,13 +73,13 @@ const LoginSignUp = () => {
         </>
       )}
 
-      <LoginModal
+      <SignUpModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLogin={handleLogin}
         title="Login"
       />
-      <LoginModal
+      <SignupModal
         isOpen={isSignUpModalOpen}
         onClose={() => setIsSignUpModalOpen(false)}
         onLogin={handleSignUp}

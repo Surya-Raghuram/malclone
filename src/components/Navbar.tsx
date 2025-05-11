@@ -10,10 +10,12 @@ import { AuthContext } from '../context/AuthContext';
 
 const Navbar = () =>{
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [profileDropdown, setIsProfileDropdown] = useState(false);
 
-   const { user } = useContext(AuthContext);
+
+  const { user, logout } = useContext(AuthContext); //Auth context, used to update state across many pages.... 
+
 // <NodeJS.Timeout> is Number returned by browser when using setTimeout/ setIntervel. 
   const handleMouseEnter = () => {
     if (timeoutRef.current) {
@@ -22,13 +24,7 @@ const Navbar = () =>{
     }
     setIsDropDownOpen(true);
   };
-  const ProfilehandleMouseEnter = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    setIsProfileDropdown(true);
-  };
+
   const ProfilehandleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setIsProfileDropdown(false);
@@ -39,6 +35,8 @@ const Navbar = () =>{
       setIsDropDownOpen(false);
     }, 2000);
   };
+  
+
 
   return(
     <>
@@ -52,19 +50,15 @@ const Navbar = () =>{
         <MessageSquare size={25} className="nav-icon" />
           {user ? (
               <div className="dropdown" >
-                  <button className="dropdown-btn" onClick={() => setIsProfileDropdown(!profileDropdown)} onMouseLeave={ProfilehandleMouseLeave}>{user}</button>
+                  <button className="dropdown-btn" id="dropdown-btn-profile" onClick={() => setIsProfileDropdown(!profileDropdown)} onMouseLeave={ProfilehandleMouseLeave}>{user}</button>
                   {profileDropdown && (
-                    <div className="dropdown-content">
+                    <div className="dropdown-content" id="profile">
                       <a id="profile-dropdown-content">
-                        <button id="logout-btn">Logout</button>
+                        <button id="logout-btn" onClick={logout}>Logout</button>
                       </a>
                     </div>
                   )}
-              </div>
-              
-
-            
-              ) : (
+              </div>) : (
             <User size={25} className="nav-icon" />
             )}
       </div>

@@ -5,18 +5,18 @@ import '../styles/LoginModal.css';
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogin: (email: string, password: string) => void;
+  onLogin: (username: string,email: string, password: string) => void;
   title: string;
   
 }
 
-const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, title }) => {
+const SignUpModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, title }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+  const [username, setUsername] = useState('');
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(email, password);
+    onLogin(username, email, password);
     onClose();
   };
   
@@ -25,12 +25,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, title
       <div className="login-modal">
         <h2>{title}</h2>
         <form onSubmit={handleSubmit}>
-            <div className="form-group">
-            <label htmlFor="email">Username</label>
+          <div className="form-group">
+            <label >Username</label>
             <input
-              type="email"
-              id="email"
-              value={email}
+              type="text"
+              id="text"
+              value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
             />
@@ -79,4 +79,4 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin, title
   );
 };
 
-export default LoginModal;
+export default SignUpModal;
