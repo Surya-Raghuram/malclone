@@ -4,8 +4,8 @@
 
 ```bash
 # Clone the repo
-git clone https://github.com/Sergio-Marq/myanimelist-clone.git
-cd myanimelist-clone
+git clone https://github.com/Sergio-Marq/malclone.git
+cd malclone
 
 # Install dependencies
 npm install
